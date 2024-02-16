@@ -158,6 +158,20 @@ app.delete('/deletemovie/:id', async (req, res) => {
   }
 });
 
+
+app.get('/getdetails', async (req, res) => {
+  try {
+    // Fetch all user details from the database
+    const userDetails = await User.find({}, { password: 0 }); // Exclude password field from the response
+    res.json(userDetails);
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+
 //  Start the Server 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

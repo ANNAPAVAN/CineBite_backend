@@ -47,8 +47,13 @@ app.post("/postfood",(req,res) => {
     hotel: req.body.hotel,
   });
   newFood.save()
-    .then((doc) => console.log(doc))
-    .catch((err) => console.log(err))
+    .then((doc) => {
+      res.json({ message: 'Food Posted successfully' });
+      console.log(doc)
+    })
+    .catch((err) => {
+      res.json({ message: 'Food Not Posted' });
+      console.log(err)})
 })
 
 app.get("/getfood",(req,res) => {
@@ -80,8 +85,13 @@ app.post("/postmovie",(req,res) => {
     theatre: req.body.theatre,
   });
   newMovie.save()
-    .then((doc) => console.log(doc))
-    .catch((err) => console.log(err))
+    .then((doc) => {
+      res.json({ message: 'Movie Posted successfully' });
+      console.log(doc)
+    })
+    .catch((err) => {
+      res.json({ message: 'Movie not POsted' });
+      console.log(err)})
 })
 
 app.get("/getmovie",(req,res) => {

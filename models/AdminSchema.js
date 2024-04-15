@@ -4,7 +4,7 @@ const JWT = require("jsonwebtoken")
 
 
 // Mongoose Schema and Model (User)
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
     name:{
       type:String,
       required:[true,"Name is required"],
@@ -20,11 +20,18 @@ const userSchema = new mongoose.Schema({
       type:String,
       reqired: [true,'Email is required']
     },
+    hotel: {
+      type:String,
+    },
+    address:{
+      type:String,
+    }
+
   },{timestamps:true});
 
 
 
-  userSchema.pre("save", async function(next) {
+  adminSchema.pre("save", async function(next) {
     if (!this.isModified("password")) return next();
     try {
         const hashedPassword = await bcrypt.hash(this.password, 10); // 10 is the salt value 
@@ -36,7 +43,7 @@ const userSchema = new mongoose.Schema({
 });
 
 
-userSchema.methods = {
+adminSchema.methods = {
     // compare password 
     
     comparePassword: async function(enteredPassword){
@@ -45,7 +52,7 @@ userSchema.methods = {
     },
 
     getJWTtoken: function(){
-      return JWT.sign({_id: this._id, email:this.email},"ANNA", {
+      return JWT.sign({_id: this._id, email:this.email,hotel:this.hotel, address:this.address},"ADMIN", {
         expiresIn: "30m"
       })
     }
@@ -53,4 +60,4 @@ userSchema.methods = {
 }
 
   
-module.exports = mongoose.model("mynew", userSchema);
+module.exports = mongoose.model("hoteladmin", adminSchema);

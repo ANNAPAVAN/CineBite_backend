@@ -12,6 +12,10 @@ const postMovie = async (req,res) => {
     image : req.body.image,
     price: req.body.price,
     theatre: req.body.theatre,
+    movie: req.body.movie,
+    area: req.body.area,
+    showtime: req.body.showtime,
+    
   });
   newMovie.save()
     .then((doc) => {

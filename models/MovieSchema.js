@@ -4,10 +4,9 @@ const movieSchema =  new mongoose.Schema({
     image: String,
     price: Number,
     theatre: String,
-    count: {
-      type: Number,
-      default: 0, 
-    },
+    movie:String,
+    area: String,
+    showtime: String,
   });
   
   module.exports = mongoose.model("movie", movieSchema);

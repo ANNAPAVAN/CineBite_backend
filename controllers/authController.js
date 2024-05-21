@@ -1,6 +1,7 @@
 const User = require('../models/UserSchema.js');
 const JWT = require("jsonwebtoken");
 const Admin = require("../models/AdminSchema.js")
+const MovieAdmin = require("../models/MovieAdminSchema.js")
 
 const login = async (req,res) => {
 
@@ -96,7 +97,7 @@ const getUsers = async (req,res) => {
     const userDetails = await User.find({}, { password: 0 }); // Exclude password field from the response
     res.json(userDetails);
   } catch (error) {
-    console.error('Error fetching user details:', error);
+    // console.error('Error fetching user details:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 }
@@ -136,7 +137,7 @@ const getAdminDetailsFromToken = async (req,res) => {
   try {
     // console.log("Anna");
       const decoded = JWT.verify(token.split(' ')[1], 'ADMIN'); 
-      console.log(decoded);
+      // console.log(decoded);
       // console.log("Anna2");
       const { _id, email,hotel,address } = decoded;
       // console.log("Anna3");
@@ -153,4 +154,47 @@ const getAdminDetailsFromToken = async (req,res) => {
   }
 };
 
-module.exports = { login, signUp, getUsers, getUserDetailsFromToken, adminSignUp, adminLogin, getAdminDetailsFromToken };
+
+const movieAdminSignUp = async (req,res) => {
+  const { name, password, email, theatre, address } = req.body;
+  // console.log('Received data:', { name, password, email }); // Log received data
+  try {
+      // Check if the user already exists in the database
+      const existingUser = await MovieAdmin.findOne({ email });
+      if (existingUser) {
+      return res.status(400).json({ message: 'Admin already exists' });
+      }
+
+      // Create a new user
+      const newAdmin = new MovieAdmin({ name, password, email,theatre, address });
+      await newAdmin.save();
+
+      return res.status(201).json({ message: 'Admin registered successfully' });
+  } catch (error) {
+      // console.error('Registration error-------->:', error);
+      return res.status(500).json({ error});
+  }
+}
+
+const MovieAdminLogin = async (req,res) => {
+
+  const { email, password } = req.body;
+  
+  try {
+    const admin = await MovieAdmin.findOne({ email }); 
+    if (!admin) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
+    const isPasswordMatched = await admin.comparePassword(password)
+    if(isPasswordMatched){
+      return res.status(200).json({ message: 'Login successful', redirect: '/movieadminpage',user_id: admin._id, JWTtoken:admin.getJWTtoken() });
+    }else{
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+module.exports = { login, signUp, getUsers, getUserDetailsFromToken, adminSignUp, adminLogin, getAdminDetailsFromToken ,movieAdminSignUp, MovieAdminLogin};

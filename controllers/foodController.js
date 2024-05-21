@@ -1,6 +1,7 @@
 const FoodCart = require("../models/FoodCartSchema");
 const Food = require("../models/FoodSchema");
 const FoodOrder = require("../models/FoodOrderSchema")
+const JWT = require("jsonwebtoken");
 
 const getFood = async (_req,res) => {
     try {
@@ -37,10 +38,10 @@ const deleteFoodItem = async(req,res) => {
     try {
         await Food.findByIdAndDelete(id);
         await FoodCart.deleteMany({item_id: id});
-        console.log("Food item deleted successfully");
+        // console.log("Food item deleted successfully");
         res.json({ message: 'Food item deleted successfully' });
     } catch (error) {
-        console.log("Internal Server Error");
+        // console.log("Internal Server Error");
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
@@ -59,7 +60,7 @@ const updateFood = async (req, res) => {
 
         res.json({ message: 'Food item updated successfully', food: updatedFood });
     } catch (error) {
-        console.log("Internal Server Error");
+        // console.log("Internal Server Error");
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
@@ -90,10 +91,10 @@ const removeFromFoodCart = async (req,res) => {
     const id = req.params.id;
     try {
         await FoodCart.findByIdAndDelete(id);
-        console.log("Food item deleted successfully");
+        // console.log("Food item deleted successfully");
         res.json({ message: 'Food item deleted successfully' });
     } catch (error) {
-        console.log("Internal Server Error");
+        // console.log("Internal Server Error");
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
@@ -159,7 +160,7 @@ const updateMobileNumber = async (req,res) => {
         }
         res.json({ message: 'Number updated successfully', item: updatedNum });
     } catch (error) {
-        console.log("Internal Server Error");
+        // console.log("Internal Server Error");
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
@@ -170,9 +171,41 @@ const orderReceivedDelete = async (req,res) => {
         await FoodOrder.findByIdAndDelete(id);
         res.json({ message: 'Food item deleted after successfully delivered'  });
     } catch (error) {
-        console.log("Internal Server Error");
+        // console.log("Internal Server Error");
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
 
-module.exports = { getFood, postFood, deleteFoodItem, updateFood, addFoodCart, getCartFood, removeFromFoodCart, getCartFoodCount, orderFood, getFoodOrders, getUserOrders, updateMobileNumber, orderReceivedDelete, hotelFoodByID };
+const getHotelOrders = async (req, res) => {
+    const token = req.headers.authorization;
+    // console.log("hotel token ", token);
+
+    try {
+        // console.log("Data received");
+        const decoded = JWT.verify(token, 'ADMIN'); 
+        const { hotel } = decoded;
+        // console.log("hotel name", hotel);
+
+        const foodItems = await FoodOrder.find({ hotel });
+        res.status(200).json(foodItems);
+    } catch (error) {
+        // console.error("Error:", error);
+        return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+    }
+}
+
+const getOrdersCount = async (req, res) => {
+    const token = req.headers.authorization;
+    try {
+        const decoded = JWT.verify(token, 'ADMIN'); 
+        const { hotel } = decoded;
+
+        const ordersCount = await FoodOrder.countDocuments({ hotel});
+        res.json({ count: ordersCount });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+module.exports = { getFood, postFood, deleteFoodItem, updateFood, addFoodCart, getCartFood, removeFromFoodCart, getCartFoodCount, orderFood, getFoodOrders, getUserOrders, updateMobileNumber, orderReceivedDelete, hotelFoodByID, getHotelOrders, getOrdersCount };

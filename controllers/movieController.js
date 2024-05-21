@@ -31,10 +31,10 @@ const deleteMovie = async (req,res) => {
     const id = req.params.id;
     try {
       await Movie.findByIdAndDelete(id);
-      console.log("Movie item deleted successfully");
+      // console.log("Movie item deleted successfully");
       res.json({ message: 'Movie item deleted successfully' });
     } catch (error) {
-      console.log("Internal Server Error");
+      // console.log("Internal Server Error");
       res.status(500).json({ error: 'Internal Server Error' });
     }
 }

@@ -1,14 +1,16 @@
 const express = require('express');
 const router = express.Router();  
 
-const { login, signUp, getUsers, getUserDetailsFromToken ,adminSignUp, adminLogin, getAdminDetailsFromToken} = require("../controllers/authController.js");
-const { getFood, postFood, deleteFoodItem, updateFood, addFoodCart,getCartFood,removeFromFoodCart, getCartFoodCount, orderFood, getFoodOrders, getUserOrders, updateMobileNumber, orderReceivedDelete, hotelFoodByID } = require("../controllers/foodController.js")
+const { login, signUp, getUsers, getUserDetailsFromToken ,adminSignUp, adminLogin, getAdminDetailsFromToken, movieAdminSignUp, MovieAdminLogin} = require("../controllers/authController.js");
+const { getFood, postFood, deleteFoodItem, updateFood, addFoodCart,getCartFood,removeFromFoodCart, getCartFoodCount, orderFood, getFoodOrders, getUserOrders, updateMobileNumber, orderReceivedDelete, hotelFoodByID ,getHotelOrders, getOrdersCount} = require("../controllers/foodController.js")
 const { getMovie, postMovie, deleteMovie} = require("../controllers/movieController.js")
 
 router.post("/login", login);
 router.post("/adminlogin",adminLogin)
+router.post("/movieadminlogin",MovieAdminLogin)
 router.post("/register", signUp)
 router.post("/adminregister",adminSignUp);
+router.post("/movieadminregister",movieAdminSignUp);
 
 router.get("/getfood",getFood)
 router.get("/getmovie",getMovie)
@@ -38,5 +40,8 @@ router.delete("/order_received_delete/:id",orderReceivedDelete);
 
 
 router.get("/gethotelfood/:id",hotelFoodByID);
+
+router.get("/gethotelorders",getHotelOrders)
+router.get("/getorderscount",getOrdersCount)
 
 module.exports = router;
